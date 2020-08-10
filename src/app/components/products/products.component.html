@@ -1,0 +1,21 @@
+<ng-container *ngIf="(values$ | async) as values">
+    <table>
+        <tr>
+            <th>Выбран</th>
+            <th>Группа</th>
+            <th>Наименование товара</th>
+            <th>Цена</th>
+        </tr>
+
+        <ng-container *ngFor="let value of values">
+            <ng-container *ngFor="let product of value.skus">
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>{{value.group.name}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.price}}</td>
+                </tr>
+            </ng-container>
+        </ng-container>
+    </table>
+</ng-container>
