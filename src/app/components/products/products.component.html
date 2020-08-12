@@ -1,21 +1,34 @@
-<ng-container *ngIf="(values$ | async) as values">
-    <table>
-        <tr>
-            <th>Выбран</th>
-            <th>Группа</th>
-            <th>Наименование товара</th>
-            <th>Цена</th>
-        </tr>
+<h1>Список товаров</h1>
 
-        <ng-container *ngFor="let value of values">
-            <ng-container *ngFor="let product of value.skus">
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>{{value.group.name}}</td>
-                    <td>{{product.name}}</td>
-                    <td>{{product.price}}</td>
-                </tr>
-            </ng-container>
-        </ng-container>
-    </table>
-</ng-container>
+<mat-table [dataSource]="dataSource" class="mat-elevation-z8" #productTable>
+    <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="group">
+        <mat-header-cell *matHeaderCellDef> Группа </mat-header-cell>
+        <mat-cell *matCellDef="let product">{{product.group}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="productName">
+        <mat-header-cell *matHeaderCellDef> Товар </mat-header-cell>
+        <mat-cell *matCellDef="let product"> {{product.productName}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="productPrice">
+        <mat-header-cell *matHeaderCellDef> Цена </mat-header-cell>
+        <mat-cell *matCellDef="let product">{{product.productPrice}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+</mat-table>
