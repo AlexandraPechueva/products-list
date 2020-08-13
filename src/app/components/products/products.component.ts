@@ -1,14 +1,13 @@
 import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ProductsService } from '../../services/products.service';
-import { Products } from 'src/app/models/products';
+import { Products, Group, Product } from 'src/app/models/products';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 
 interface DataSource {
-  group: string;
-  productName: string;
-  productPrice: number;
+  group: Group;
+  product: Product;
 }
 
 @Component({
@@ -27,13 +26,34 @@ export class ProductsComponent implements OnInit {
 
   private _products: Products[] = [];
   private _preparedData: DataSource[] = [];
-  tableColumns: string[] = ['select', 'group', 'productName', 'productPrice'];
+  tableColumns: string[] = ['select', 'group.name', 'product.name', 'product.price'];
   groups: string[] = []
   selection = new SelectionModel<DataSource>(true, []);
   dataSource = new MatTableDataSource(this._preparedData);
 
   ngOnInit() {
     this._getData();
+  }
+
+  addToCart() {
+    this._removeSelectedRows();
+  }
+
+  private _removeSelectedRows() {
+    const data = this.dataSource.data;
+
+    if (this.selection.selected) {
+      this.selection.selected.forEach(item => {
+        const index = data.findIndex(d => d.group.id === item.group.id && d.product.id === item.product.id);
+
+        data.splice(index, 1);
+        this.dataSource.data = data;
+
+        this.table.renderRows();
+        this.selection.clear();
+      });
+
+    }
   }
 
   private _getGroups(products: Products[]) {
@@ -50,7 +70,7 @@ export class ProductsComponent implements OnInit {
   private _getData() {
     this._productsService.getProductsWithGroups().subscribe(response => {
       this._getDataSource(response);
-      this.dataSource.sort = this.sort;
+      this._sortDataSource();
       this._getGroups(this._products);
     });
   }
@@ -64,14 +84,25 @@ export class ProductsComponent implements OnInit {
     products.forEach(product => {
       product.skus.forEach(skus => {
         this._preparedData.push(<DataSource>{
-          group: product.group.name,
-          productName: skus.name,
-          productPrice: skus.price,
+          group: product.group,
+          product: skus,
         })
       });
     });
 
     return this._preparedData;
+  }
+
+  private _getPropertyByPath(obj: Object, pathString: string) {
+    return pathString.split('.').reduce((o, i) => o[i], obj);
+  }
+
+  private _sortDataSource() {
+    this.dataSource.sortingDataAccessor = (data, sortHeaderId: string) => {
+      return this._getPropertyByPath(data, sortHeaderId);
+    };
+
+    this.dataSource.sort = this.sort;
   }
 
   isAllSelected() {
@@ -94,7 +125,7 @@ export class ProductsComponent implements OnInit {
     }
 
     this.dataSource.filterPredicate = (data: DataSource, filterValue: string) => {
-      return data.group
+      return data.group.name
         .trim()
         .toLowerCase().indexOf(filterValue.trim().toLowerCase()) >= 0;
     };

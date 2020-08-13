@@ -3,12 +3,12 @@ export interface Products {
     skus: Product[];
 }
 
-interface Group {
+export interface Group {
     id: number;
     name: string;
 }
 
-interface Product {
+export interface Product {
     id: number;
     name: string;
     price: number;
