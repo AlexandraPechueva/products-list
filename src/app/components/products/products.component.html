@@ -1,6 +1,15 @@
 <h1>Список товаров</h1>
 
-<mat-table [dataSource]="dataSource" class="mat-elevation-z8" #productTable>
+<mat-form-field>
+    <mat-select #select placeholder="Группа" (selectionChange)="applyFilter($event.value)">
+        <mat-option>Все</mat-option>
+        <mat-option *ngFor="let group of groups" [value]="group">
+            {{group}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+
+<mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort #table>
     <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>
             <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
@@ -20,12 +29,12 @@
     </ng-container>
 
     <ng-container matColumnDef="productName">
-        <mat-header-cell *matHeaderCellDef> Товар </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Товар </mat-header-cell>
         <mat-cell *matCellDef="let product"> {{product.productName}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="productPrice">
-        <mat-header-cell *matHeaderCellDef> Цена </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Цена </mat-header-cell>
         <mat-cell *matCellDef="let product">{{product.productPrice}} </mat-cell>
     </ng-container>
 
