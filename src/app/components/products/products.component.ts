@@ -21,7 +21,7 @@ export class ProductsComponent implements OnInit {
 
   constructor(private _productsService: ProductsService) { }
 
-  @ViewChild('table', { static: true }) table: MatTable<any>;
+  @ViewChild('table', { static: true }) table: MatTable<Products>;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   private _products: Products[] = [];
@@ -75,7 +75,7 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  private _getDataSource(response: any) {
+  private _getDataSource(response: Products[]) {
     this._products = response;
     this._prepareDataForTable(this._products);
   }
@@ -93,19 +93,19 @@ export class ProductsComponent implements OnInit {
     return this._preparedData;
   }
 
-  private _getPropertyByPath(obj: Object, pathString: string) {
+  private _getPropertyByPath(obj: Object, pathString: string): string {
     return pathString.split('.').reduce((o, i) => o[i], obj);
   }
 
   private _sortDataSource() {
-    this.dataSource.sortingDataAccessor = (data, sortHeaderId: string) => {
+    this.dataSource.sortingDataAccessor = (data: DataSource, sortHeaderId: string) => {
       return this._getPropertyByPath(data, sortHeaderId);
     };
 
     this.dataSource.sort = this.sort;
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
 
@@ -118,7 +118,7 @@ export class ProductsComponent implements OnInit {
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
-  applyFilter(filterValue: string) {
+  applyFilter(filterValue: string): string {
     if (!filterValue) {
       this._resetDateSourceFilter();
       return;
