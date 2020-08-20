@@ -17,10 +17,6 @@
 .add-button {
     @include app-btn-common-layout();
     @include app-btn-focus();
-
-    i {
-        margin-left: 15px;
-    }
 }
 
 .content-price, .title-price {
