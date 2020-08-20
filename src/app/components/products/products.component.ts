@@ -40,19 +40,15 @@ export class ProductsComponent implements OnInit {
   }
 
   private _removeSelectedRows() {
-    const data = this.dataSource.data;
-
     if (this.selection.selected) {
-      this.selection.selected.forEach(item => {
-        const index = data.findIndex(d => d.group.id === item.group.id && d.product.id === item.product.id);
-
-        data.splice(index, 1);
-        this.dataSource.data = data;
-
-        this.table.renderRows();
-        this.selection.clear();
+      this.dataSource.data = this.dataSource.data.filter(item => {
+        return !this.selection.selected.some(selectedItem => {
+          return selectedItem.group.id === item.group.id && selectedItem.product.id === item.product.id;
+        });
       });
 
+      this.table.renderRows();
+      this.selection.clear();
     }
   }
 
