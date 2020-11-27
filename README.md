@@ -1,4 +1,5 @@
 ### Список товаров
+### https://alexandrapechueva.github.io/products-list/
 
 В рамках проекта выполнена:
 - Загрузка товаров с API
